@@ -6,6 +6,8 @@ import { Role } from '../../models/role';
 import {FormsModule} from '@angular/forms';
 import {NgForOf, NgIf} from '@angular/common';
 import {Privilege} from '../../models/privilege';
+import { AuthService } from '../../service/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +21,7 @@ import {Privilege} from '../../models/privilege';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
+  currentUserId: string | null = null; // To store current user ID
 
   users: User[] = [];
   roles: Role[] = [];
@@ -53,11 +56,19 @@ export class DashboardComponent {
   userToEdit: User | null = null; // Pour savoir si on édite un utilisateur
   roleToEdit: Role | null = null; // Pour savoir si on édite un rôle
 
-  constructor(private userService: UserService, private roleService: RoleService) {}
+  constructor(  private router: Router, private userService: UserService, private roleService: RoleService,private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadUsers();
     this.loadRoles();
+    this.currentUserId = localStorage.getItem('currentUserId');
+    this.checkPrivileges();
+    if (!this.currentUserId) {
+      this.router.navigate(['/403']); // Redirige vers une page 403
+      return; // Arrête l'exécution du reste du code
+    }
+
+
   }
 
 
@@ -235,7 +246,48 @@ export class DashboardComponent {
       }
     }
   }
+  canCreateUser: boolean = false;
+  canCreateRole: boolean = false;
+  canViewUser: boolean = false;
+  canEditUser: boolean = false;
+  canDeleteUser: boolean = false;
+  canViewRole: boolean = false;
+  canEditRole: boolean = false;
+  canDeleteRole: boolean = false;
+  // Vérifier les privilèges de l'utilisateur pour afficher des sections spécifiques
+  checkPrivileges(): void {
+    this.authService.hasPrivilege(Privilege.USER_CREATE).subscribe(canCreateUser => {
+      this.canCreateUser = canCreateUser;
+    });
+
+    this.authService.hasPrivilege(Privilege.ROLE_CREATE).subscribe(canCreateRole => {
+      this.canCreateRole = canCreateRole;
+    });
+
+    // Vérification des privilèges pour les utilisateurs
+    this.authService.hasPrivilege(Privilege.USER_VIEW).subscribe(canViewUser => {
+      this.canViewUser = canViewUser;
+    });
+
+    this.authService.hasPrivilege(Privilege.USER_EDIT).subscribe(canEditUser => {
+      this.canEditUser = canEditUser;
+    });
+
+    this.authService.hasPrivilege(Privilege.USER_DELETE).subscribe(canDeleteUser => {
+      this.canDeleteUser = canDeleteUser;
+    });
+
+    // Vérification des privilèges pour les rôles
+    this.authService.hasPrivilege(Privilege.ROLE_VIEW).subscribe(canViewRole => {
+      this.canViewRole = canViewRole;
+    });
+
+    this.authService.hasPrivilege(Privilege.ROLE_EDIT).subscribe(canEditRole => {
+      this.canEditRole = canEditRole;
+    });
+
+    this.authService.hasPrivilege(Privilege.ROLE_DELETE).subscribe(canDeleteRole => {
+      this.canDeleteRole = canDeleteRole;
+    });
+  }
 }
-
-
-

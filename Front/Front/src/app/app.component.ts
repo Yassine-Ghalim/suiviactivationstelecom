@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import {RouterLink, RouterOutlet} from '@angular/router';
+import {Router, RouterLink, RouterOutlet} from '@angular/router';
 import { FormsModule } from '@angular/forms';  // Ensure this is imported
-import { HttpClientModule } from '@angular/common/http'; // Add this import
+import { HttpClientModule } from '@angular/common/http';
+import {UserService} from './service/user.service'; // Add this import
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,14 @@ import { HttpClientModule } from '@angular/common/http'; // Add this import
 })
 export class AppComponent {
   title = 'Front';
+  constructor( private router: Router) {}
+
+  isLoggedIn(): boolean {
+    return localStorage.getItem('currentUserId') !== null;
+  }
+
+  logout() {
+    localStorage.removeItem('currentUserId');
+    this.router.navigate(['/login']);
+  }
 }

@@ -3,6 +3,7 @@ package net.yassine.auth_service.Controller;
 import net.yassine.auth_service.Entity.User;
 import net.yassine.auth_service.Service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 

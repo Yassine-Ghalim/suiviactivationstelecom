@@ -1,57 +1,69 @@
 package net.yassine.auth_service.Service;
 
+import net.yassine.auth_service.Entity.Privilege;
 import net.yassine.auth_service.Entity.Role;
 import net.yassine.auth_service.Entity.User;
 import net.yassine.auth_service.Repository.RoleRepository;
 import net.yassine.auth_service.Repository.UserRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    // Suppression du PasswordEncoder car vous ne souhaitez pas hasher les mots de passe
-    public UserService(UserRepository userRepository,RoleRepository roleRepository) {
+
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return (UserDetails) userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+
+        // Récupérer les rôles et privilèges associés
+        Collection<GrantedAuthority> authorities = user.getRoles().stream()
+                .flatMap(role -> role.getPrivileges().stream())
+                .map(privilege -> new SimpleGrantedAuthority(privilege.name()))
+                .collect(Collectors.toList());
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
     }
 
     // ✅ Valider un utilisateur (Login)
     public User validateUser(String username, String password) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
         if (user.getPassword().equals(password)) {  // Comparaison directe sans hachage
             return user;
         } else {
-            throw new UsernameNotFoundException("Invalid credentials");
+            throw new UsernameNotFoundException("Identifiants invalides");
         }
     }
 
-    // ✅ Ajouter un nouvel utilisateur (Inscription) sans hachage du mot de passe
+    // ✅ Ajouter un nouvel utilisateur
     public User createUser(User user) {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be empty");
+            throw new IllegalArgumentException("Le mot de passe ne peut pas être vide");
         }
 
         user.setId(UUID.randomUUID().toString()); // Générer un ID unique
-        // Ne pas hasher le mot de passe, le stocker tel quel
-        // user.setPassword(passwordEncoder.encode(user.getPassword())); // Hachage supprimé
 
         return userRepository.save(user);
     }
@@ -75,13 +87,13 @@ public class UserService implements UserDetailsService {
             user.setLastName(updatedUser.getLastName());
             user.setEnabled(updatedUser.isEnabled());
 
-            // Si le mot de passe est fourni, ne pas le hasher
+            // Si un mot de passe est fourni, l'utiliser tel quel
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                user.setPassword(updatedUser.getPassword());  // Ne pas hacher le mot de passe
+                user.setPassword(updatedUser.getPassword());
             }
 
             return userRepository.save(user);
-        }).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        }).orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
     }
 
     // ✅ Supprimer un utilisateur
@@ -89,21 +101,18 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
+    // ✅ Assigner un rôle à un utilisateur
     public User assignRoleToUser(String userId, String roleId) {
-        Optional<User> userOpt = userRepository.findById(userId);
-        Optional<Role> roleOpt = roleRepository.findById(roleId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé !"));
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Rôle non trouvé !"));
 
-        if (userOpt.isPresent() && roleOpt.isPresent()) {
-            User user = userOpt.get();
-            Role role = roleOpt.get();
-
-            // Ajouter le rôle à l'utilisateur
+        // Ajouter le rôle seulement s'il n'est pas déjà assigné
+        if (!user.getRoles().contains(role)) {
             user.getRoles().add(role);
-
-            // Sauvegarder l'utilisateur avec le nouveau rôle
-            return userRepository.save(user);
-        } else {
-            throw new RuntimeException("Utilisateur ou rôle non trouvé !");
         }
+
+        return userRepository.save(user);
     }
 }

@@ -44,7 +44,6 @@ public class RoleController {
         roleService.deleteRole(id);
     }
 
-
     private boolean hasPrivilege(String userId, Privilege privilege) {
         // Récupérer les privilèges de l'utilisateur en fonction de son role
         List<Privilege> privileges = roleService.getPrivilegesForUser(userId);
