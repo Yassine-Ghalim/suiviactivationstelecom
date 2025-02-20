@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .link {
+            margin-top: 10px;
+            display: block;
+            color: blue;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Inscription</h2>
+    <form id="registerForm">
+        <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Mot de passe" required>
+        <input type="text" id="firstName" placeholder="Prénom" required>
+        <input type="text" id="lastName" placeholder="Nom" required>
+        <button type="submit">S'inscrire</button>
+    </form>
+    <a href="login.html" class="link">Déjà un compte ? Se connecter</a>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const user = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            enabled: true,
+            emailVerified: false,
+            roles: ["USER"]
+        };
+
+        try {
+            const response = await fetch('http://localhost:8090/users', { // 🔥 Utilise bien le port 8090 ici
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            });
+
+            if (response.ok) {
+                alert("Inscription réussie !");
+                window.location.href = "login.html"; // 🔄 Redirige vers la page de connexion
+            } else {
+                alert("Erreur lors de l'inscription !");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Problème de connexion au serveur !");
+        }
+    });
+</script>
+
+
+</body>
+</html>

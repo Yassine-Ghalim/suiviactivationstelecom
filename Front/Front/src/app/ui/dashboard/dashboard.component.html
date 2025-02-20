@@ -1,0 +1,109 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- Liste des utilisateurs (à gauche) -->
+    <div class="col-md-6">
+      <h3>Liste des utilisateurs</h3>
+      <ul class="list-group">
+        <li *ngFor="let user of users"
+            class="list-group-item"
+            [class.active]="user.id === selectedUserId"
+            (click)="selectedUserId = user.id">
+          {{ user.username }} ({{ user.firstName }} {{ user.lastName }})
+          <button class="btn btn-warning btn-sm float-end ml-2" (click)="editUser(user)">Modifier</button>
+          <button class="btn btn-danger btn-sm float-end" (click)="deleteUser(user.id)">Supprimer</button>
+        </li>
+      </ul>
+      <!-- Ajouter un nouvel utilisateur -->
+      <button class="btn btn-success mt-3" (click)="showUserForm = true; clearForm()">Ajouter un utilisateur</button>
+    </div>
+
+    <!-- Liste des rôles (à droite) -->
+    <div class="col-md-6">
+      <h3>Liste des rôles</h3>
+      <ul class="list-group">
+        <li *ngFor="let role of roles"
+            class="list-group-item"
+            [class.active]="role.id === selectedRoleId"
+            (click)="selectedRoleId = role.id">
+          {{ role.roleName }} - {{ role.description }}
+          <button class="btn btn-warning btn-sm float-end ml-2" (click)="editRole(role)">Modifier</button>
+          <button class="btn btn-danger btn-sm float-end" (click)="deleteRole(role.id)">Supprimer</button>
+        </li>
+      </ul>
+      <!-- Ajouter un nouveau rôle -->
+      <button class="btn btn-success mt-3" (click)="showRoleForm = true; clearForm()">Ajouter un rôle</button>
+
+      <!-- Boutons d'assignation et de suppression de rôle -->
+      <div class="mt-3">
+        <button class="btn btn-primary" (click)="assignRoleToUser()">ASSIGNER LE ROLE </button><br><br>
+        <button class="btn btn-danger" (click)="removeRoleFromUser()">Supprimer le rôle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire utilisateur -->
+  <div *ngIf="showUserForm" class="mt-4">
+    <h3>{{ userToEdit ? 'Modifier un utilisateur' : 'Ajouter un utilisateur' }}</h3>
+    <form (ngSubmit)="userToEdit ? updateUser() : createUser()">
+      <div class="mb-3">
+        <label for="username" class="form-label">Nom d'utilisateur</label>
+        <input type="text" class="form-control" id="username" [(ngModel)]="userForm.username" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" [(ngModel)]="userForm.email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Mot de passe</label>
+        <input type="password" class="form-control" id="password" [(ngModel)]="userForm.password" name="password" required>
+      </div>
+      <div class="mb-3">
+        <label for="firstName" class="form-label">Prénom</label>
+        <input type="text" class="form-control" id="firstName" [(ngModel)]="userForm.firstName" name="firstName">
+      </div>
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Nom</label>
+        <input type="text" class="form-control" id="lastName" [(ngModel)]="userForm.lastName" name="lastName">
+      </div>
+
+      <!-- Texte du bouton conditionnel -->
+      <button type="submit" class="btn btn-primary">
+        {{ userToEdit ? 'Modifier' : 'Ajouter' }}
+      </button><br><br>
+      <!-- Si vous êtes en mode modification, vous pouvez ajouter un bouton pour annuler -->
+      <button type="button" class="btn btn-secondary" (click)="cancelEditing()">Annuler</button>
+    </form>
+  </div>
+
+  <!-- Formulaire rôle -->
+  <div *ngIf="showRoleForm" class="mt-4">
+    <h3>{{ roleToEdit ? 'Modifier un rôle' : 'Ajouter un rôle' }}</h3>
+    <form (ngSubmit)="roleToEdit ? updateRole() : createRole()">
+
+      <div class="mb-3">
+        <label for="roleName" class="form-label">Nom du rôle</label>
+        <input type="text" id="roleName" class="form-control" [(ngModel)]="roleForm.roleName" name="role" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="roleDescription" class="form-label">Description</label>
+        <input type="text" id="roleDescription" class="form-control" [(ngModel)]="roleForm.description" name="description" required />
+      </div>
+
+      <!-- Section des privilèges -->
+      <div class="mb-3">
+        <label class="form-label">Privilèges</label><br>
+        <div *ngFor="let privilege of privileges">
+          <input type="checkbox"
+                 [checked]="roleForm.privileges.includes(privilege)"
+                 (change)="togglePrivilege(privilege)" />
+          <label>{{ privilege }}</label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success ml-2">{{ roleToEdit ? 'Sauvegarder' : 'Ajouter' }}</button>
+      <button type="button" class="btn btn-secondary ml-2" (click)="showRoleForm = false">Annuler</button>
+    </form>
+  </div>
+
+</div>

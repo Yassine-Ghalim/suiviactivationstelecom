@@ -1,0 +1,172 @@
+/* Global Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header Section */
+h3 {
+  font-size: 1.5rem;
+  color: #222;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* List Items */
+.list-group-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Active Item */
+.list-group-item.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 5px;
+  font-size: 0.875rem;
+  padding: 8px 15px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-sm {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+}
+
+/* Forms */
+.form-label {
+  color: #444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.form-control {
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+/* Buttons Align */
+.float-end {
+  float: right;
+}
+
+/* Section Styling */
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mt-4 {
+  margin-top: 2rem;
+}
+
+/* Form Button Group */
+button[type="submit"] {
+  width: 100%;
+}
+
+/* Adding Responsive Design */
+@media (max-width: 768px) {
+  .col-md-6 {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+/* Hover Effect on List Group Items */
+.list-group-item:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Active Button States */
+button:active, .btn:active {
+  transform: translateY(2px);
+}
+
+/* Miscellaneous Styles */
+h3 {
+  color: #222;
+  text-align: center;
+}
+
