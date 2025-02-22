@@ -22,7 +22,7 @@ export class LoginComponent {
     this.userService.getAllUsers().subscribe(users => {
       const user = users.find(u => u.email === this.email && u.password === this.password);
       if (user) {
-        alert('Connexion réussie !' + user.id);
+        alert('Connexion réussie ! ' +'Bienvenue Mr (Mm) '+  user.username);
         // Store user ID in local storage
         localStorage.setItem('currentUserId', user.id);
         localStorage.setItem('currentUser', user.username);

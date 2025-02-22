@@ -1,0 +1,11 @@
+.navbar-brand {
+  font-size: 30px; /* Grande taille pour le logo */
+  font-weight: 700; /* Texte en gras */
+  color: #343a40; /* Gris foncé pour un look moderne */
+  text-transform: capitalize; /* Première lettre en majuscule */
+  font-family: 'Roboto', sans-serif; /* Police moderne et sans-serif */
+  letter-spacing: 3px; /* Un peu d'espacement entre les lettres */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1); /* Ombre légère pour un effet 3D */
+  padding: 5px 10px; /* Ajouter un peu de padding pour l'espace */
+}
+

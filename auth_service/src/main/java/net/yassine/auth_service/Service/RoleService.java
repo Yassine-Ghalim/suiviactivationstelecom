@@ -67,15 +67,5 @@ public class RoleService {
     }
 
 
-    public List<Privilege> getPrivilegesForUser(String userId) {
-        // Récupérer le rôle de l'utilisateur par son ID (si on suppose que l'ID du rôle est stocké dans l'utilisateur)
-        Role userRole = roleRepository.findById(userId).orElse(null);
 
-        if (userRole == null) {
-            return List.of();  // L'utilisateur n'a pas de rôle valide
-        }
-
-        // Récupérer les privilèges du rôle
-        return userRole.getPrivileges().stream().collect(Collectors.toList());
-    }
 }

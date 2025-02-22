@@ -1,22 +1,22 @@
 <div class="bg-light vh-100 d-flex flex-column">
   <!-- Navbar du haut -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg bg-dark text-white">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#" *ngIf="isLoggedIn()">Suivi Activations</a>
+      <a class="navbar-brand" routerLink="/dashboard" *ngIf="isLoggedIn()">TeleTrack </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item" *ngIf="!isLoggedIn()">
-            <a class="nav-link" routerLink="/login">Login</a>
+            <a class="nav-link text-white" routerLink="/login">Login</a>
           </li>
           <li class="nav-item" *ngIf="!isLoggedIn()">
-            <a class="nav-link" routerLink="/register">Register</a>
+            <a class="nav-link text-white" routerLink="/register">Register</a>
           </li>
           <!-- Affichage du nom de l'utilisateur connecté -->
           <li class="nav-item d-flex align-items-center" *ngIf="isLoggedIn()">
-            <span class="nav-link">👤 {{ getUsername() }}</span>
+            <span class="nav-link text-white"><i class="bi bi-person-rolodex"></i> {{ getUsername() }}</span>
           </li>
           <li class="nav-item" *ngIf="isLoggedIn()">
             <button class="btn btn-danger" (click)="logout()">Logout</button>
@@ -27,13 +27,13 @@
   </nav>
 
   <!-- Conteneur principal avec Sidebar et Contenu -->
-  <div class="d-flex flex-grow-1">
+  <div class="d-flex flex-grow-1" >
     <!-- Sidebar (affichée seulement si connecté) -->
     <nav class="bg-dark text-white p-3" style="width: 250px;" *ngIf="isLoggedIn()">
       <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link text-white" routerLink="/dashboard">
-            <i class="bi bi-house-door-fill"></i> Overview
+            <i class="bi bi-house-door-fill" ></i> Overview
           </a>
         </li>
         <li class="nav-item">

@@ -1,0 +1,27 @@
+.navbar-brand {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #4CAF50, #FF9800, #2196F3);  /* Trois couleurs : vert, orange et bleu */
+  -webkit-background-clip: text;  /* Applique le gradient sur le texte */
+  color: transparent;  /* Rend le texte transparent pour que le gradient soit visible */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand i {
+  margin-right: 8px; /* Si tu veux ajouter une icône à gauche du texte */
+}
+
+/* Ajout d'une ombre douce pour le texte */
+.navbar-brand {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand:focus {
+  outline: none;
+}

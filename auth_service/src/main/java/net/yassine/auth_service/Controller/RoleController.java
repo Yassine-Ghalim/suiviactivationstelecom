@@ -30,7 +30,7 @@ public class RoleController {
 
     @PostMapping
     public ResponseEntity<Role>  createRole(@RequestBody RoleRequest request) {
-        Role role = roleService.createRole(request.getRoleName(), request.getDescription(), request.getPrivileges());
+        Role role = roleService.createRole(request.getRole(), request.getDescription(), request.getPrivileges());
         return ResponseEntity.status(HttpStatus.CREATED).body(role);
     }
 
@@ -44,12 +44,6 @@ public class RoleController {
         roleService.deleteRole(id);
     }
 
-    private boolean hasPrivilege(String userId, Privilege privilege) {
-        // Récupérer les privilèges de l'utilisateur en fonction de son role
-        List<Privilege> privileges = roleService.getPrivilegesForUser(userId);
 
-        // Vérifier si l'utilisateur a le privilège spécifié
-        return privileges.contains(privilege);
-    }
 
 }

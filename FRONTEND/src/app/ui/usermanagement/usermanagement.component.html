@@ -1,0 +1,149 @@
+<!-- dashboard.component.html -->
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Liste des utilisateurs (à gauche) -->
+    <div class="col-md-8" *ngIf="canViewUser" style="border-right: 1px solid #ccc; padding-right: 20px;">
+      <h3>Users List</h3>
+
+      <!-- Table des utilisateurs -->
+      <table class="table ">
+        <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Password</th>
+          <th >Roles</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of users" [class.table-active]="user.id === selectedUserId" (click)="selectedUserId = user.id">
+          <td>{{ user.username }} ({{ user.firstName }} {{ user.lastName }})</td>
+          <td>{{ user.email }}</td>
+          <td>********</td>
+          <td class="roles-column">
+            <!-- Afficher les rôles assignés à l'utilisateur -->
+            <span *ngFor="let role of user.roles; let isLast = last">
+                {{ role.role}}<span *ngIf="!isLast">, </span>
+              </span>
+          </td>
+          <td>
+            <!-- Afficher les boutons modifier et supprimer en fonction des privilèges -->
+            <button *ngIf="canEditUser" class="btn btn-warning btn-sm" (click)="editUser(user)" style="margin-right: 10px;">Edit</button>
+            <button *ngIf="canDeleteUser" class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- Ajouter un nouvel utilisateur uniquement si l'utilisateur a le privilège -->
+      <button *ngIf="canCreateUser" class="btn btn-success mt-3" (click)="showUserForm = true; clearForm()">Add User</button>
+    </div>
+
+    <!-- Liste des rôles (à droite) -->
+    <div class="col-md-4" *ngIf="canViewRole" style="padding-left: 20px;">
+      <h3>Roles List</h3>
+
+      <!-- Table des rôles -->
+      <table class="table ">
+        <thead>
+        <tr>
+          <th>Role Name</th>
+          <th>Description</th>
+
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let role of roles" [class.table-active]="role.id === selectedRoleId" (click)="selectedRoleId = role.id" [ngClass]="{'bg-warning': role.id === selectedRoleId}" (click)="selectedRoleId = role.id">
+          <td>{{ role.role }}</td>
+          <td>{{ role.description }}</td>
+          <!--<td>{{ role.privileges.join(', ') }}</td>-->
+         <td>
+           <!-- Afficher les boutons modifier et supprimer en fonction des privilèges -->
+            <button *ngIf="canEditRole" class="btn btn-warning btn-sm ml-2" (click)="editRole(role)" style="margin-right: 10px;">Edit</button>
+            <button *ngIf="canDeleteRole" class="btn btn-danger btn-sm" (click)="deleteRole(role.id)">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- Ajouter un rôle uniquement si l'utilisateur a le privilège -->
+      <button *ngIf="canCreateRole" class="btn btn-success mt-3" (click)="showRoleForm = true; clearForm()">Add role</button>
+
+      <!-- Boutons d'assignation et de suppression de rôle -->
+      <div class="mt-3">
+        <button class="btn btn-primary" (click)="assignRoleToUser()">Assign Role</button>
+        <p class="mt-2 text-muted">To assign a role, select a user and a role, then click on <strong>Assign Role</strong>.</p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Formulaire utilisateur -->
+  <div *ngIf="showUserForm" class="mt-4">
+    <h3>{{ userToEdit ? 'Edit User' : 'Add User' }}</h3>
+    <form (ngSubmit)="userToEdit ? updateUser() : createUser()">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" [(ngModel)]="userForm.username" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" [(ngModel)]="userForm.email" name="email" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" [(ngModel)]="userForm.password" name="password" required>
+      </div>
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="firstName" [(ngModel)]="userForm.firstName" name="firstName">
+      </div>
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="lastName" [(ngModel)]="userForm.lastName" name="lastName">
+      </div>
+
+      <!-- Texte du bouton conditionnel -->
+      <button type="submit" class="btn btn-primary">
+        {{ userToEdit ? 'Modifier' : 'Ajouter' }}
+      </button><br><br>
+      <!-- Si vous êtes en mode modification, vous pouvez ajouter un bouton pour annuler -->
+      <button type="button" class="btn btn-secondary" (click)="cancelEditing()">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Formulaire rôle -->
+  <div *ngIf="showRoleForm" class="mt-4">
+    <h3>{{ roleToEdit ? 'Edit Role' : 'Add Role' }}</h3>
+    <form (ngSubmit)="roleToEdit ? updateRole() : createRole()">
+
+      <div class="mb-3">
+        <label for="roleName" class="form-label">Role Name</label>
+        <input type="text" id="roleName" class="form-control" [(ngModel)]="roleForm.role" name="role" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="roleDescription" class="form-label">Description</label>
+        <input type="text" id="roleDescription" class="form-control" [(ngModel)]="roleForm.description" name="description" required />
+      </div>
+
+      <!-- Section des privilèges -->
+      <div class="mb-3">
+        <label class="form-label">Privileges</label><br>
+        <div *ngFor="let privilege of privileges">
+          <input type="checkbox"
+                 [checked]="roleForm.privileges.includes(privilege)"
+                 (change)="togglePrivilege(privilege)" />
+          <label>{{ privilege }}</label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success ml-2">{{ roleToEdit ? 'Save' : 'Add' }}</button>
+      <button type="button" class="btn btn-secondary ml-2" (click)="showRoleForm = false">Cancel</button>
+    </form>
+  </div>
+
+</div>

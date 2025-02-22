@@ -84,4 +84,6 @@ public class UserController {
         User user = userService.assignRoleToUser(userId, roleId);
         return ResponseEntity.ok(user);
     }
+
+
 }

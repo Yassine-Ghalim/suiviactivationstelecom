@@ -1,0 +1,20 @@
+th, td {
+  text-align: left;
+  vertical-align: middle;
+}
+
+td {
+  word-wrap: break-word; /* Pour gérer les longues chaînes sans casser la mise en page */
+}
+
+th {
+  width: 20%; /* Ajustez la largeur de la colonne Roles selon le contenu */
+}
+
+td.roles-column {
+  min-width: 200px; /* Largeur minimale pour que tous les rôles tiennent */
+  max-width: 300px; /* Si nécessaire, ajustez la largeur maximale */
+  white-space: normal; /* Permet de couper le texte si nécessaire */
+  word-wrap: break-word; /* Gérer les débordements de texte */
+}
+

@@ -9,7 +9,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class RoleRequest {
-    private String roleName;
+    private String role;
     private String description;
     private Set<Privilege> privileges;
 }
