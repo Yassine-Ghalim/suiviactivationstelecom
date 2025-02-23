@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -58,15 +60,16 @@ public class UserService implements UserDetailsService {
     }
 
     // ✅ Ajouter un nouvel utilisateur
+
+
     public User createUser(User user) {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Le mot de passe ne peut pas être vide");
         }
 
-        user.setId(UUID.randomUUID().toString()); // Générer un ID unique
-
         return userRepository.save(user);
     }
+
 
     // ✅ Récupérer la liste de tous les utilisateurs
     public List<User> getAllUsers() {
@@ -74,12 +77,12 @@ public class UserService implements UserDetailsService {
     }
 
     // ✅ Récupérer un utilisateur par son ID
-    public Optional<User> getUserById(String id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
     // ✅ Mettre à jour un utilisateur
-    public User updateUser(String id, User updatedUser) {
+    public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id).map(user -> {
             user.setUsername(updatedUser.getUsername());
             user.setEmail(updatedUser.getEmail());
@@ -97,12 +100,12 @@ public class UserService implements UserDetailsService {
     }
 
     // ✅ Supprimer un utilisateur
-    public void deleteUser(String id) {
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
     // ✅ Assigner un rôle à un utilisateur
-    public User assignRoleToUser(String userId, String roleId) {
+    public User assignRoleToUser(Long userId, Long roleId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé !"));
         Role role = roleRepository.findById(roleId)

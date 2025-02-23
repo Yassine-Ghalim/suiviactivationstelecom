@@ -17,7 +17,7 @@ export class RoleService {
   }
 
   // Récupérer un rôle par ID
-  getRoleById(id: string): Observable<Role> {
+  getRoleById(id: number): Observable<Role> {
     return this.http.get<Role>(`${this.apiUrl}/${id}`);
   }
 
@@ -28,12 +28,12 @@ export class RoleService {
 
 
   // Mettre à jour un rôle
-  updateRole(id: string, role: Role): Observable<Role> {
+  updateRole(id: number, role: Role): Observable<Role> {
     return this.http.put<Role>(`${this.apiUrl}/${id}`, role);
   }
 
   // Supprimer un rôle
-  deleteRole(id: string): Observable<void> {
+  deleteRole(id: number | null): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

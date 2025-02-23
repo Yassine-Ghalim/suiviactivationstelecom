@@ -1,7 +1,7 @@
 import { Role } from './role';
 
 export interface User {
-  id: string; // UUID
+  id?: number| null ;
   username: string;
   email: string;
   password: string;

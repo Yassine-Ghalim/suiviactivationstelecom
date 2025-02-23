@@ -19,7 +19,7 @@ export class UserService {
 
 
   // Récupérer un utilisateur par ID
-  getUserById(id: string): Observable<User> {
+  getUserById(id: number): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
 
@@ -33,16 +33,16 @@ export class UserService {
   }
 
   // Mettre à jour un utilisateur
-  updateUser(id: string, user: { firstName: string; lastName: string; username: string }): Observable<User> {
+  updateUser(id: number | undefined, user: { firstName: string; lastName: string; username: string }): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/${id}`, user);
   }
 
   // Supprimer un utilisateur
-  deleteUser(userId: string): Observable<any> {
+  deleteUser(userId: number | null | undefined): Observable<any> {
     return this.http.delete(`http://localhost:8091/api/users/${userId}`, { responseType: 'text' });
   }
 
-  assignRoleToUser(userId: string, roleId: string): Observable<User> {
+  assignRoleToUser(userId: number, roleId: number): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/${userId}/roles/${roleId}`, {});
   }
 

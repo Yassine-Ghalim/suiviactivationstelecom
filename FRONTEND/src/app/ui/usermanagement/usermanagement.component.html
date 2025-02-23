@@ -2,7 +2,8 @@
 <div class="container-fluid mt-4">
   <div class="row">
     <!-- Liste des utilisateurs (à gauche) -->
-    <div class="col-md-8" *ngIf="canViewUser" style="border-right: 1px solid #ccc; padding-right: 20px;">
+    <div class="col-md-8"  style="border-right: 1px solid #ccc; padding-right: 20px;">
+      {{currentUserId}}
       <h3>Users List</h3>
 
       <!-- Table des utilisateurs -->
@@ -29,19 +30,19 @@
           </td>
           <td>
             <!-- Afficher les boutons modifier et supprimer en fonction des privilèges -->
-            <button *ngIf="canEditUser" class="btn btn-warning btn-sm" (click)="editUser(user)" style="margin-right: 10px;">Edit</button>
-            <button *ngIf="canDeleteUser" class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+            <button  class="btn btn-warning btn-sm" (click)="editUser(user)" style="margin-right: 10px;">Edit</button>
+            <button  class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
           </td>
         </tr>
         </tbody>
       </table>
 
       <!-- Ajouter un nouvel utilisateur uniquement si l'utilisateur a le privilège -->
-      <button *ngIf="canCreateUser" class="btn btn-success mt-3" (click)="showUserForm = true; clearForm()">Add User</button>
+      <button  class="btn btn-success mt-3" (click)="showUserForm = true; clearForm()">Add User</button>
     </div>
 
     <!-- Liste des rôles (à droite) -->
-    <div class="col-md-4" *ngIf="canViewRole" style="padding-left: 20px;">
+    <div class="col-md-4"  style="padding-left: 20px;">
       <h3>Roles List</h3>
 
       <!-- Table des rôles -->
@@ -61,15 +62,15 @@
           <!--<td>{{ role.privileges.join(', ') }}</td>-->
          <td>
            <!-- Afficher les boutons modifier et supprimer en fonction des privilèges -->
-            <button *ngIf="canEditRole" class="btn btn-warning btn-sm ml-2" (click)="editRole(role)" style="margin-right: 10px;">Edit</button>
-            <button *ngIf="canDeleteRole" class="btn btn-danger btn-sm" (click)="deleteRole(role.id)">Delete</button>
+            <button  class="btn btn-warning btn-sm ml-2" (click)="editRole(role)" style="margin-right: 10px;">Edit</button>
+            <button  class="btn btn-danger btn-sm" (click)="deleteRole(role.id)">Delete</button>
           </td>
         </tr>
         </tbody>
       </table>
 
       <!-- Ajouter un rôle uniquement si l'utilisateur a le privilège -->
-      <button *ngIf="canCreateRole" class="btn btn-success mt-3" (click)="showRoleForm = true; clearForm()">Add role</button>
+      <button  class="btn btn-success mt-3" (click)="showRoleForm = true; clearForm()">Add role</button>
 
       <!-- Boutons d'assignation et de suppression de rôle -->
       <div class="mt-3">

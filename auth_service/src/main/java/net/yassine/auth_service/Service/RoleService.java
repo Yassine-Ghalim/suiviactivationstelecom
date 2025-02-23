@@ -29,7 +29,7 @@ public class RoleService {
     /**
      * Récupère un rôle par son ID
      */
-    public Role getRoleById(String id) {
+    public Role getRoleById(Long id) {
         return roleRepository.findById(id).orElse(null);
     }
 
@@ -48,7 +48,7 @@ public class RoleService {
     /**
      * Met à jour un rôle existant
      */
-    public Role updateRole(String id, Role roleDetails) {
+    public Role updateRole(Long id, Role roleDetails) {
         Role role = roleRepository.findById(id).orElse(null);
         if (role != null) {
             role.setRole(roleDetails.getRole());
@@ -62,7 +62,7 @@ public class RoleService {
     /**
      * Supprime un rôle par son ID
      */
-    public void deleteRole(String id) {
+    public void deleteRole(Long id) {
         roleRepository.deleteById(id);
     }
 

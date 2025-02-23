@@ -47,7 +47,7 @@ public class UserController {
 
     // ✅ Endpoint pour récupérer un utilisateur par ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable String id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -62,7 +62,7 @@ public class UserController {
 
     // ✅ Endpoint pour mettre à jour un utilisateur
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
         try {
             User updatedUser = userService.updateUser(id, user);
             return ResponseEntity.ok(updatedUser);
@@ -73,14 +73,14 @@ public class UserController {
 
     // ✅ Endpoint pour supprimer un utilisateur
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully");
     }
 
 
     @PostMapping("/{userId}/roles/{roleId}")
-    public ResponseEntity<User> assignRole(@PathVariable String userId, @PathVariable String roleId) {
+    public ResponseEntity<User> assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
         User user = userService.assignRoleToUser(userId, roleId);
         return ResponseEntity.ok(user);
     }

@@ -9,5 +9,5 @@
     { path: 'login', component: LoginComponent },
     { path: 'usermanagement', component: UsermanagementComponent },
     { path: 'dashboard', component: DashboardComponent },
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
+    { path: '', redirectTo: '/login', pathMatch: 'full' }
   ];

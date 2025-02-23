@@ -23,18 +23,19 @@ import {NgClass, NgForOf, NgIf} from '@angular/common';
 })
 
 export class UsermanagementComponent {
-  currentUserId: string | null = null; // To store current user ID
+  currentUserId: number | null = null; // To store current user ID
 
   users: User[] = [];
   roles: Role[] = [];
   privileges: Privilege[] = Object.values(Privilege);
-  selectedUserId: string = '';
-  selectedRoleId: string = '';
+  selectedUserId: number | null | undefined = null;
+  selectedRoleId: number | null = null;
+
 
   showUserForm: boolean = false; // Pour afficher le formulaire de l'utilisateur
   showRoleForm: boolean = false; // Pour afficher le formulaire du rôle
   userForm: User = {
-    id: '',
+    id: null ,
     username: '',
     email: '',
     password: '',
@@ -42,12 +43,12 @@ export class UsermanagementComponent {
     lastName: '',
     enabled: true,
     emailVerified: false,
-    roles: []
+    roles: [] // Add roles if needed, e.g. ['USER'] for a default role
   };
   // Formulaire utilisateur
 
   roleForm: Role = {
-    id: '',
+    id: null,
     role: '',
     description: '',
     privileges: [] // Doit être un tableau de strings
@@ -61,27 +62,34 @@ export class UsermanagementComponent {
   constructor(  private router: Router, private userService: UserService, private roleService: RoleService,private authService: AuthService) {}
 
   ngOnInit(): void {
+
+    this.currentUserId = Number(localStorage.getItem('currentUserId'));
     this.loadUsers();
     this.loadRoles();
-    this.currentUserId = localStorage.getItem('currentUserId');
-    this.checkPrivileges();
+   /* this.checkPrivileges();*/
     if (!this.currentUserId) {
-      this.router.navigate(['/403']); // Redirige vers une page 403
-      return; // Arrête l'exécution du reste du code
+      alert('Aucun utilisateur connecté. Veuillez vous connecter.'); // Show alert if no user ID is found
+      return; // Stop further execution of the code
     }
 
-
   }
+
 
 
 
   createUser() {
-    this.userService.createUser(this.userForm).subscribe(() => {
-      this.loadUsers();
+    // Exclure l'ID avant d'envoyer les données
+    const userToCreate = { ...this.userForm };
+    delete userToCreate.id; // Supprimer l'ID s'il existe dans le formulaire
+
+    this.userService.createUser(userToCreate).subscribe(() => {
+      this.loadUsers(); // Recharger la liste des utilisateurs
       this.showUserForm = false; // Fermer le formulaire
     });
   }
 
+
+/*
   updateUser() {
     if (this.userToEdit) {
       // Mise à jour de l'utilisateur avec les données de userToEdit
@@ -90,7 +98,20 @@ export class UsermanagementComponent {
         this.showUserForm = false; // Fermer le formulaire
       });
     }
+  }*/
+  updateUser() {
+    if (this.userToEdit && this.userToEdit.id !== null) {
+      // Mise à jour de l'utilisateur avec les données de userToEdit
+      this.userService.updateUser(this.userToEdit.id, this.userForm).subscribe(() => {
+        this.loadUsers();
+        this.showUserForm = false; // Fermer le formulaire
+      });
+    } else {
+      // Optionnel: ajouter un message d'erreur si l'ID est null
+      alert('L\'ID de l\'utilisateur est invalide.');
+    }
   }
+
 
   cancelEditing() {
     this.userToEdit = null;  // Réinitialise l'utilisateur à modifier
@@ -105,7 +126,7 @@ export class UsermanagementComponent {
   }
 
   updateRole() {
-    if (this.roleToEdit) {
+    if (this.roleToEdit && this.roleToEdit.id) {
       this.roleService.updateRole(this.roleToEdit.id, this.roleForm).subscribe(() => {
         this.loadRoles();
         this.showRoleForm = false; // Fermer le formulaire
@@ -126,7 +147,8 @@ export class UsermanagementComponent {
   }
 
   clearForm() {
-    this.userForm = { id: '',
+    this.userForm = {
+      id: 0,
       username: '',
       email: '',
       password: '',
@@ -136,7 +158,7 @@ export class UsermanagementComponent {
       emailVerified: false,
       roles: []
     };
-    this.roleForm = {id:'', role: '', description: '', privileges: []  };
+    this.roleForm = {id:0, role: '', description: '', privileges: []  };
     this.userToEdit = null;
     this.roleToEdit = null;
   }
@@ -150,7 +172,7 @@ export class UsermanagementComponent {
     }
   }
 
-  deleteUser(userId: string): void {
+  deleteUser(userId: number | null | undefined): void {
     this.userService.deleteUser(userId).subscribe(
       (response) => {
         console.log('Utilisateur supprimé avec succès');
@@ -166,8 +188,7 @@ export class UsermanagementComponent {
   }
 
 
-
-  deleteRole(id: string) {
+  deleteRole(id: number | null) {
     this.roleService.deleteRole(id).subscribe({
       next: () => {
         console.log(`Rôle avec l'ID ${id} supprimé avec succès.`);
@@ -235,27 +256,29 @@ export class UsermanagementComponent {
   }*/
 
   // Supprimer un rôle de l'utilisateur
-  removeRoleFromUser(role: Role) {
-    if (!this.selectedUserId || !this.selectedRoleId) {
-      alert('Veuillez sélectionner un utilisateur et un rôle.');
-      return;
-    }
-
-    const user = this.users.find(u => u.id === this.selectedUserId);
-    if (user) {
-      const roleIndex = user.roles.findIndex(r => r.id === this.selectedRoleId);
-      if (roleIndex !== -1) {
-        user.roles.splice(roleIndex, 1); // Supprimer le rôle de l'utilisateur
-
-        this.userService.updateUser(user.id, user).subscribe(() => {
-          alert('Rôle supprimé avec succès.');
-          this.loadUsers();  // Recharger la liste des utilisateurs
-        }, error => {
-          console.error('Erreur lors de la suppression du rôle', error);
-        });
+    /*removeRoleFromUser(role: Role) {
+      if (!this.selectedUserId || !this.selectedRoleId) {
+        alert('Veuillez sélectionner un utilisateur et un rôle.');
+        return;
       }
-    }
-  }
+
+      const user = this.users.find(u => u.id === this.selectedUserId);
+      if (user) {
+        const roleIndex = user.roles.findIndex(r => r.id === this.selectedRoleId);
+        if (roleIndex !== -1) {
+          user.roles.splice(roleIndex, 1); // Supprimer le rôle de l'utilisateur
+
+          this.userService.updateUser(user.id, user).subscribe(() => {
+            alert('Rôle supprimé avec succès.');
+            this.loadUsers();  // Recharger la liste des utilisateurs
+          }, error => {
+            console.error('Erreur lors de la suppression du rôle', error);
+          });
+        }
+      }
+    }*/
+
+  /*
   canCreateUser: boolean = false;
   canCreateRole: boolean = false;
   canViewUser: boolean = false;
@@ -300,4 +323,5 @@ export class UsermanagementComponent {
       this.canDeleteRole = canDeleteRole;
     });
   }
+  */
 }

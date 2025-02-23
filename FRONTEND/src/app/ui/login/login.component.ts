@@ -22,15 +22,24 @@ export class LoginComponent {
     this.userService.getAllUsers().subscribe(users => {
       const user = users.find(u => u.email === this.email && u.password === this.password);
       if (user) {
-        alert('Connexion réussie ! ' +'Bienvenue Mr (Mm) '+  user.username);
-        // Store user ID in local storage
-        localStorage.setItem('currentUserId', user.id);
-        localStorage.setItem('currentUser', user.username);
-        if (user) {
-          this.router.navigate(['/usermanagement']); // Redirect after login
+        alert('Connexion réussie ! ' + 'Bienvenue Mr (Mm) ' + user.username);
+
+        // Check if user.id is not null before storing
+        if (user.id !== null && user.id !== undefined) {
+          console.log("User ID to store:", user.id);
+          localStorage.setItem('currentUserId', user.id.toString());  // Store user ID
+          localStorage.setItem('currentUser', user.username);  // Store user username
+
+          // Check if currentUserId is correctly stored
+          setTimeout(() => {
+            console.log("Stored currentUserId:", localStorage.getItem('currentUserId'));
+          }, 1000); // Wait 1 second to check if it's set
         } else {
-          alert('Non autorisé');
+          console.error('User ID is null or undefined');
+          alert('Problème avec l\'ID de l\'utilisateur');
         }
+
+        this.router.navigate(['/usermanagement']); // Redirect after login
       } else {
         alert('Identifiants incorrects');
       }
@@ -38,5 +47,7 @@ export class LoginComponent {
       console.error('Erreur de connexion', error);
     });
   }
+
+
 
 }

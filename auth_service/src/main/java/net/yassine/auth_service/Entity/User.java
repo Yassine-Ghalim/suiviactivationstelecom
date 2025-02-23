@@ -20,7 +20,8 @@ import java.util.List;
 public class User {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incrementing primary key
+    private Long id;
 
     private String username;
     private String email;
