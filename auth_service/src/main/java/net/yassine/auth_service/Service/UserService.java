@@ -1,26 +1,31 @@
 package net.yassine.auth_service.Service;
 
+import com.sun.security.auth.UserPrincipal;
 import net.yassine.auth_service.Entity.Privilege;
 import net.yassine.auth_service.Entity.Role;
 import net.yassine.auth_service.Entity.User;
 import net.yassine.auth_service.Repository.RoleRepository;
 import net.yassine.auth_service.Repository.UserRepository;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.Response;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 
 @Service
 @Transactional
-public class UserService implements UserDetailsService {
+public class UserService  {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -30,78 +35,217 @@ public class UserService implements UserDetailsService {
         this.roleRepository = roleRepository;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+    @Value("${keycloak.auth-server-url}")
+    private String keycloakServerUrl;
 
-        // Récupérer les rôles et privilèges associés
-        Collection<GrantedAuthority> authorities = user.getRoles().stream()
-                .flatMap(role -> role.getPrivileges().stream())
-                .map(privilege -> new SimpleGrantedAuthority(privilege.name()))
-                .collect(Collectors.toList());
+    @Value("${keycloak.realm}")
+    private String realm;
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
+    @Value("${keycloak.resource}")
+    private String clientId;
+
+    @Value("${keycloak.credentials.secret}")
+    private String clientSecret;
+
+    @Value("${keycloak.admin.username}")
+    private String adminUsername;
+
+    @Value("${keycloak.admin.password}")
+    private String adminPassword;
+
+    /**
+     * Initialise une instance Keycloak pour l'admin
+     */
+    private Keycloak getKeycloakAdminInstance() {
+        return KeycloakBuilder.builder()
+                .serverUrl(keycloakServerUrl)
+                .realm("bdcc-realm")
+                .clientId("auth-service")
+                .username(adminUsername)
+                .password(adminPassword)
+                .grantType(OAuth2Constants.PASSWORD)
+                .build();
     }
 
-    // ✅ Valider un utilisateur (Login)
-    public User validateUser(String username, String password) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
-        if (user.getPassword().equals(password)) {  // Comparaison directe sans hachage
-            return user;
-        } else {
-            throw new UsernameNotFoundException("Identifiants invalides");
+    /**
+     * Initialise une instance Keycloak pour un utilisateur normal
+     */
+    private Keycloak getKeycloakUserInstance(String username, String password) {
+        return KeycloakBuilder.builder()
+                .serverUrl(keycloakServerUrl)
+                .realm(realm)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .username(username)
+                .password(password)
+                .grantType(OAuth2Constants.PASSWORD)
+                .build();
+    }
+
+    /**
+     * Enregistre un nouvel utilisateur dans Keycloak et la base de données
+     */
+    // Méthode pour enregistrer un utilisateur dans Keycloak et dans la base de données
+    public String registerUser(User user) {
+        // Initialisation de l'instance Keycloak
+        Keycloak keycloak = getKeycloakAdminInstance();
+
+        // Créer la représentation de l'utilisateur pour Keycloak
+        UserRepresentation userRep = new UserRepresentation();
+        userRep.setUsername(user.getUsername());
+        userRep.setEmail(user.getEmail());
+        userRep.setFirstName(user.getFirstName());
+        userRep.setLastName(user.getLastName());
+        userRep.setEnabled(user.isEnabled());
+        userRep.setEmailVerified(user.isEmailVerified());
+
+        // Ajout du mot de passe
+        CredentialRepresentation credentials = new CredentialRepresentation();
+        credentials.setType(CredentialRepresentation.PASSWORD);
+        credentials.setValue(user.getPassword()); // Le mot de passe saisi par l'utilisateur
+        credentials.setTemporary(false); // Le mot de passe n'est pas temporaire
+        userRep.setCredentials(Collections.singletonList(credentials));
+
+        try {
+            // Créer l'utilisateur dans Keycloak
+            Response response = keycloak.realm(realm).users().create(userRep);
+
+            // Si la création de l'utilisateur réussie (statut 201)
+            if (response.getStatus() == 201) {
+                // Récupérer l'ID généré par Keycloak
+                String keycloakUserId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+                user.setKeycloakUserId(keycloakUserId);  // Stocker l'ID Keycloak dans l'entité User
+
+                // Enregistrer l'utilisateur dans la base de données avec l'ID Keycloak
+                userRepository.save(user); // Sauvegarde dans la base de données
+
+                // Authentifier l'utilisateur après l'enregistrement
+                return authenticateUser(user.getUsername(), user.getPassword());
+            } else {
+                throw new RuntimeException("Échec de l'enregistrement dans Keycloak : " + response.getStatus());
+            }
+        } catch (Exception e) {
+            // Gérer les exceptions en cas d'erreur
+            throw new RuntimeException("Erreur lors de l'enregistrement de l'utilisateur : " + e.getMessage(), e);
         }
     }
 
-    // ✅ Ajouter un nouvel utilisateur
 
 
-    public User createUser(User user) {
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Le mot de passe ne peut pas être vide");
+    /**
+     *
+     * Authentifie un utilisateur et retourne son token
+     */
+    public String authenticateUser(String username, String password) {
+        Keycloak keycloak = getKeycloakUserInstance(username, password);
+
+        try {
+            AccessTokenResponse accessToken = keycloak.tokenManager().getAccessToken();
+            return accessToken.getToken();
+        } catch (Exception e) {
+            throw new RuntimeException("Échec de l'authentification : " + e.getMessage(), e);
         }
-
-        return userRepository.save(user);
     }
 
-
-    // ✅ Récupérer la liste de tous les utilisateurs
+    /**
+     * Récupère la liste de tous les utilisateurs
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // ✅ Récupérer un utilisateur par son ID
-    public Optional<User> getUserById(Long id) {
+    /**
+     * Récupère un utilisateur par son ID (Correction : `String id` au lieu de `Long id`)
+     */
+    public Optional<User> getUserById(Long id) { // Correction : ID en String ✅
         return userRepository.findById(id);
     }
 
-    // ✅ Mettre à jour un utilisateur
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    /**
+     * Met à jour un utilisateur existant--------------------------------------------------
+     */
     public User updateUser(Long id, User updatedUser) {
-        return userRepository.findById(id).map(user -> {
-            user.setUsername(updatedUser.getUsername());
-            user.setEmail(updatedUser.getEmail());
-            user.setFirstName(updatedUser.getFirstName());
-            user.setLastName(updatedUser.getLastName());
-            user.setEnabled(updatedUser.isEnabled());
+        Keycloak keycloak = getKeycloakAdminInstance();
 
-            // Si un mot de passe est fourni, l'utiliser tel quel
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-                user.setPassword(updatedUser.getPassword());
+        try {
+            // Log the received User object
+            System.out.println("Received User object: " + updatedUser);
+
+            // Check if the user exists in PostgreSQL
+            Optional<User> optionalUser = userRepository.findById(id);
+            if (optionalUser.isEmpty()) {
+                throw new RuntimeException("User not found");
             }
 
-            return userRepository.save(user);
-        }).orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
-    }
+            // Update the user in PostgreSQL
+            User user = optionalUser.get();
+            user.setUsername(updatedUser.getUsername());
+            user.setPassword(updatedUser.getPassword());
+            user.setFirstName(updatedUser.getFirstName());
+            user.setLastName(updatedUser.getLastName());
+            user.setEmail(updatedUser.getEmail());
+            user.setEnabled(updatedUser.isEnabled());
+            user.setEmailVerified(updatedUser.isEmailVerified());
 
-    // ✅ Supprimer un utilisateur
+
+
+            // Save in the database
+            userRepository.save(user);
+
+            // Prepare the user representation for Keycloak update
+            UserRepresentation userRep = keycloak.realm(realm).users().get(user.getKeycloakUserId()).toRepresentation();
+            userRep.setUsername(updatedUser.getUsername());
+            userRep.setFirstName(updatedUser.getFirstName());
+            userRep.setLastName(updatedUser.getLastName());
+            userRep.setEmail(updatedUser.getEmail());
+            userRep.setEnabled(updatedUser.isEnabled());
+            userRep.setEmailVerified(updatedUser.isEmailVerified());
+
+            if (updatedUser.getPassword() != null) {
+                CredentialRepresentation credential = new CredentialRepresentation();
+                credential.setType(CredentialRepresentation.PASSWORD);
+                credential.setValue(updatedUser.getPassword());
+                credential.setTemporary(false);
+                userRep.setCredentials(Collections.singletonList(credential));
+            }
+
+            System.out.println("User object before sending to Keycloak: " + userRep);
+            keycloak.realm(realm).users().get(user.getKeycloakUserId()).update(userRep);
+
+            // If no exception is thrown, the update was successful
+            System.out.println("User updated successfully in Keycloak");
+
+            // Return the updated user from the database
+            return user;
+
+        } catch (Exception e) {
+            System.out.println("Error updating user: " + e.getMessage());
+            throw new RuntimeException("Error updating user: " + e.getMessage(), e);
+        }
+    }
+    //--------------------------------------------------------------------------
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        Keycloak keycloak = getKeycloakAdminInstance();
+
+        try {
+            // Supprimer l'utilisateur dans Keycloak
+            Optional<User> optionalUser = userRepository.findById(id);
+            if (optionalUser.isPresent()) {
+                String keycloakUserId = optionalUser.get().getKeycloakUserId();
+                keycloak.realm(realm).users().get(keycloakUserId).remove();
+                userRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("Utilisateur introuvable");
+            }
+
+            // Supprimer en base de données
+            userRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la suppression de l'utilisateur : " + e.getMessage(), e);
+        }
     }
 
     // ✅ Assigner un rôle à un utilisateur
@@ -117,6 +261,21 @@ public class UserService implements UserDetailsService {
         }
 
         return userRepository.save(user);
+    }
+
+
+    public Set<Privilege> getUserPrivileges(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        return user.getRoles().stream()
+                .flatMap(role -> role.getPrivileges().stream())
+                .collect(Collectors.toSet());
+    }
+
+    public User findByKeycloakUserId(String keycloakUserId) {
+        return userRepository.findByKeycloakUserId(keycloakUserId)
+                .orElseThrow(() -> new RuntimeException("User not found with keycloakUserId: " + keycloakUserId));
     }
 
 

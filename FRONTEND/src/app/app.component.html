@@ -1,51 +1,44 @@
-<div class="vh-100 d-flex flex-column">
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand" routerLink="/dashboard" *ngIf="isLoggedIn()">TeleTrack</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item" *ngIf="!isLoggedIn()">
-            <a class="nav-link" routerLink="/login">Login</a>
-          </li>
-          <li class="nav-item" *ngIf="!isLoggedIn()">
-            <a class="nav-link" routerLink="/register">Register</a>
-          </li>
-          <li class="nav-item d-flex align-items-center" *ngIf="isLoggedIn()">
-            <span class="nav-link"><i class="bi bi-person-rolodex"></i> {{ getUsername() }}</span>
-          </li>
-          <li class="nav-item" *ngIf="isLoggedIn()">
-            <button class="btn btn-danger" (click)="logout()">Logout</button>
-          </li>
-        </ul>
-      </div>
+<div *ngIf="keycloakService.isLoggedIn(); else loginTemplate">
+  <!-- Navbar/Menu visible uniquement si l'utilisateur est connecté -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Application</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item" >
+          <a class="nav-link" routerLink="/dashboard">🏠 Accueil</a>
+        </li>
+        <!-- Afficher l'élément si l'utilisateur a le privilège 'USER_VIEW' -->
+        <li class="nav-item" *ngIf="hasUserViewPrivilege" >
+          <a class="nav-link" routerLink="/usermanagement">👥 Gestion Utilisateurs</a>
+        </li>
+
+        <li class="nav-item" *ngIf="profile">
+          <a class="nav-link" routerLink="/profile">👤 Profil</a>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-outline-danger" (click)="handleLogout()">🚪 Déconnexion</button>
+        </li>
+      </ul>
     </div>
   </nav>
 
-  <!-- Conteneur principal -->
-  <div class="d-flex flex-grow-1">
-    <!-- Sidebar -->
-    <nav class="sidebar p-3" *ngIf="isLoggedIn()">
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard">
-            <i class="bi bi-house-door-fill"></i> Overview
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/usermanagement">
-            <i class="bi bi-person-lines-fill"></i> User Management
-          </a>
-        </li>
-      </ul>
-    </nav>
+  <!-- Afficher le profil de l'utilisateur connecté -->
+  <div *ngIf="profile" class="container mt-3">
+    <h3>Bienvenue, {{ profile.firstName }} {{ profile.lastName }}!</h3>
 
-    <!-- Contenu dynamique -->
-    <div class="flex-grow-1 content">
-      <router-outlet></router-outlet>
-    </div>
   </div>
+
+  <!-- Contenu principal de l'application -->
+  <router-outlet></router-outlet>
 </div>
+
+<!-- Template affiché si l'utilisateur n'est PAS connecté -->
+<ng-template #loginTemplate>
+  <div class="login-container">
+    <h2>Bienvenue ! Veuillez vous connecter.</h2>
+    <button class="btn btn-primary" (click)="handleLogin()">🔑 Connexion</button>
+  </div>
+</ng-template>

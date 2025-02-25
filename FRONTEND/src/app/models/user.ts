@@ -2,6 +2,7 @@ import { Role } from './role';
 
 export interface User {
   id?: number| null ;
+  keycloak_user_id : string | undefined;
   username: string;
   email: string;
   password: string;

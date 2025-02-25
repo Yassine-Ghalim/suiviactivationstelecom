@@ -23,6 +23,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incrementing primary key
     private Long id;
 
+    @Column(name = "keycloak_user_id")
+    private String keycloakUserId;  // Keycloak ID as String
     private String username;
     private String email;
     private String password;

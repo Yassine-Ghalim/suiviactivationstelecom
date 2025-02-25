@@ -35,7 +35,8 @@ export class UsermanagementComponent {
   showUserForm: boolean = false; // Pour afficher le formulaire de l'utilisateur
   showRoleForm: boolean = false; // Pour afficher le formulaire du rôle
   userForm: User = {
-    id: null ,
+    id: 0 ,
+    keycloak_user_id: '',
     username: '',
     email: '',
     password: '',
@@ -48,7 +49,7 @@ export class UsermanagementComponent {
   // Formulaire utilisateur
 
   roleForm: Role = {
-    id: null,
+    id: 0,
     role: '',
     description: '',
     privileges: [] // Doit être un tableau de strings
@@ -67,10 +68,10 @@ export class UsermanagementComponent {
     this.loadUsers();
     this.loadRoles();
    /* this.checkPrivileges();*/
-    if (!this.currentUserId) {
+   /* if (!this.currentUserId) {
       alert('Aucun utilisateur connecté. Veuillez vous connecter.'); // Show alert if no user ID is found
       return; // Stop further execution of the code
-    }
+    }*/
 
   }
 
@@ -82,10 +83,17 @@ export class UsermanagementComponent {
     const userToCreate = { ...this.userForm };
     delete userToCreate.id; // Supprimer l'ID s'il existe dans le formulaire
 
-    this.userService.createUser(userToCreate).subscribe(() => {
-      this.loadUsers(); // Recharger la liste des utilisateurs
-      this.showUserForm = false; // Fermer le formulaire
-    });
+    this.userService.createUser(userToCreate).subscribe(
+      response => {
+        this.loadUsers(); // Recharger la liste des utilisateurs
+        this.showUserForm = false; // Fermer le formulaire
+      },
+      error => {
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
+
+      }
+    );
+
   }
 
 
@@ -149,6 +157,7 @@ export class UsermanagementComponent {
   clearForm() {
     this.userForm = {
       id: 0,
+      keycloak_user_id : '',
       username: '',
       email: '',
       password: '',
@@ -204,10 +213,17 @@ export class UsermanagementComponent {
 
   // Charger les utilisateurs depuis le service
   loadUsers() {
-    this.userService.getAllUsers().subscribe(data => {
-      this.users = data;
-    });
+    this.userService.getAllUsers().subscribe(
+      data => {
+        console.log("Utilisateurs chargés avec succès :", data);
+        this.users = data;
+      },
+      error => {
+        console.error("Erreur lors du chargement des utilisateurs :", error);
+      }
+    );
   }
+
 
   // Charger les rôles depuis le service
   loadRoles() {
