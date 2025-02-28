@@ -278,5 +278,9 @@ public class UserService  {
                 .orElseThrow(() -> new RuntimeException("User not found with keycloakUserId: " + keycloakUserId));
     }
 
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
 
 }

@@ -1,35 +1,45 @@
 <div *ngIf="keycloakService.isLoggedIn(); else loginTemplate">
   <!-- Navbar/Menu visible uniquement si l'utilisateur est connecté -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Application</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+
+      <ul class="navbar-nav col-md-4"  >
         <li class="nav-item" >
-          <a class="nav-link" routerLink="/dashboard">🏠 Accueil</a>
+          <a class="nav-link" routerLink="/dashboard"><h3>Application</h3></a>
+        </li>
+        <li class="nav-item" >
+          <a class="nav-link" routerLink="/dashboard"><b>🏠 Overview</b></a>
         </li>
         <!-- Afficher l'élément si l'utilisateur a le privilège 'USER_VIEW' -->
         <li class="nav-item" *ngIf="hasUserViewPrivilege" >
-          <a class="nav-link" routerLink="/usermanagement">👥 Gestion Utilisateurs</a>
+          <a class="nav-link" routerLink="/usermanagement">👥 Manage Users</a>
         </li>
 
         <li class="nav-item" *ngIf="profile">
-          <a class="nav-link" routerLink="/profile">👤 Profil</a>
+          <a class="nav-link" >👤 Profil</a>
         </li>
+
         <li class="nav-item">
-          <button class="btn btn-outline-danger" (click)="handleLogout()">🚪 Déconnexion</button>
+          <button class="btn btn-outline-danger" (click)="handleLogout()">🚪 Logout</button>
+        </li>
+      </ul>
+      <ul class="navbar-nav col-md-6">
+
+      </ul>
+      <ul class="navbar-nav col-md-2">
+
+        <li *ngIf="profile" class="container mt-3">
+          <h3>Welcome, {{ profile.firstName }} {{ profile.lastName }}!</h3>
         </li>
       </ul>
     </div>
   </nav>
 
   <!-- Afficher le profil de l'utilisateur connecté -->
-  <div *ngIf="profile" class="container mt-3">
-    <h3>Bienvenue, {{ profile.firstName }} {{ profile.lastName }}!</h3>
 
-  </div>
 
   <!-- Contenu principal de l'application -->
   <router-outlet></router-outlet>
@@ -38,7 +48,7 @@
 <!-- Template affiché si l'utilisateur n'est PAS connecté -->
 <ng-template #loginTemplate>
   <div class="login-container">
-    <h2>Bienvenue ! Veuillez vous connecter.</h2>
+    <h2>Welcome ! Veuillez vous connecter.</h2>
     <button class="btn btn-primary" (click)="handleLogin()">🔑 Connexion</button>
   </div>
 </ng-template>

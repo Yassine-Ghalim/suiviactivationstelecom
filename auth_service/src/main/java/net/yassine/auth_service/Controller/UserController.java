@@ -5,6 +5,7 @@ import net.yassine.auth_service.Entity.User;
 import net.yassine.auth_service.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,12 @@ public class UserController {
     }
 
 
-
-    // ✅ Endpoint pour créer un nouvel utilisateur (inscription)
+    // Endpoint pour créer un nouvel utilisateur (inscription)
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
         try {
             String token = userService.registerUser(user);
-
             // Retourner un objet JSON au lieu d'une simple chaîne de caractères
             Map<String, String> response = new HashMap<>();
             response.put("message", "Utilisateur enregistré avec succès");
@@ -47,16 +47,17 @@ public class UserController {
     }
 
 
-
-    // ✅ Endpoint pour récupérer tous les utilisateurs (Admin Panel)
+    //Endpoint pour récupérer tous les utilisateurs (Admin Panel)
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<List<User>> getListUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
-    // ✅ Endpoint pour récupérer un utilisateur par ID
+    //Endpoint pour récupérer un utilisateur par ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id)
@@ -70,8 +71,9 @@ public class UserController {
 
 
 
-    // ✅ Endpoint pour mettre à jour un utilisateur
+    //Endpoint pour mettre à jour un utilisateur
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         try {
             // Appeler la méthode updateUser du service
@@ -97,8 +99,9 @@ public class UserController {
         }
     }
 
-    // ✅ Endpoint pour supprimer un utilisateur
+    //Endpoint pour supprimer un utilisateur
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
@@ -106,6 +109,7 @@ public class UserController {
 
 
     @PostMapping("/{userId}/roles/{roleId}")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<User> assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
         User user = userService.assignRoleToUser(userId, roleId);
         return ResponseEntity.ok(user);
@@ -114,6 +118,7 @@ public class UserController {
 
 
     @GetMapping("/privileges/{keycloakUserId}")
+    @PreAuthorize("hasAuthority('USER_VIEW')")
     public ResponseEntity<List<Privilege>> getUserPrivileges(@PathVariable String keycloakUserId) {
         User user = userService.findByKeycloakUserId(keycloakUserId);  // Utilise le Keycloak ID
         if (user == null) {
@@ -127,9 +132,6 @@ public class UserController {
 
         return ResponseEntity.ok(privileges);
     }
-
-
-
 
 
 }

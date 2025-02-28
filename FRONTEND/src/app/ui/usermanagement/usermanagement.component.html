@@ -1,5 +1,5 @@
 <!-- dashboard.component.html -->
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-2">
   <div class="row">
     <!-- Liste des utilisateurs (à gauche) -->
     <div class="col-md-8"  style="border-right: 1px solid #ccc; padding-right: 20px;">
@@ -29,15 +29,15 @@
           </td>
           <td>
             <!-- Afficher les boutons modifier et supprimer en fonction des privilèges -->
-            <button  class="btn btn-warning btn-sm" (click)="editUser(user)" style="margin-right: 10px;">Edit</button>
-            <button  class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+            <button  class="btn btn-outline-warning btn-sm" (click)="editUser(user)" style="margin-right: 10px;">Edit</button>
+            <button  class="btn btn-outline-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
           </td>
         </tr>
         </tbody>
       </table>
 
       <!-- Ajouter un nouvel utilisateur uniquement si l'utilisateur a le privilège -->
-      <button  class="btn btn-success mt-3" (click)="showUserForm = true; clearForm()">Add User</button>
+      <button  class="btn btn-outline-success mt-3" (click)="showUserForm = true; clearForm()">Add User</button>
     </div>
 
     <!-- Liste des rôles (à droite) -->
@@ -61,19 +61,19 @@
           <!--<td>{{ role.privileges.join(', ') }}</td>-->
          <td>
            <!-- Afficher les boutons modifier et supprimer en fonction des privilèges -->
-            <button  class="btn btn-warning btn-sm ml-2" (click)="editRole(role)" style="margin-right: 10px;">Edit</button>
-            <button  class="btn btn-danger btn-sm" (click)="deleteRole(role.id)">Delete</button>
+            <button  class="btn btn-outline-warning btn-sm ml-2" (click)="editRole(role)" style="margin-right: 10px;">Edit</button>
+            <button  class="btn btn-outline-danger btn-sm" (click)="deleteRole(role.id)">Delete</button>
           </td>
         </tr>
         </tbody>
       </table>
 
       <!-- Ajouter un rôle uniquement si l'utilisateur a le privilège -->
-      <button  class="btn btn-success mt-3" (click)="showRoleForm = true; clearForm()">Add role</button>
+      <button  class="btn btn-outline-success mt-3" (click)="showRoleForm = true; clearForm()">Add role</button>
 
       <!-- Boutons d'assignation et de suppression de rôle -->
       <div class="mt-3">
-        <button class="btn btn-primary" (click)="assignRoleToUser()">Assign Role</button>
+        <button class="btn btn-outline-primary" (click)="assignRoleToUser()">Assign Role</button>
         <p class="mt-2 text-muted">To assign a role, select a user and a role, then click on <strong>Assign Role</strong>.</p>
 
       </div>
@@ -107,11 +107,11 @@
       </div>
 
       <!-- Texte du bouton conditionnel -->
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-outline-primary">
         {{ userToEdit ? 'Modifier' : 'Ajouter' }}
       </button><br><br>
       <!-- Si vous êtes en mode modification, vous pouvez ajouter un bouton pour annuler -->
-      <button type="button" class="btn btn-secondary" (click)="cancelEditing()">Cancel</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="cancelEditing()">Cancel</button>
     </form>
   </div>
 
@@ -141,8 +141,8 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-success ml-2">{{ roleToEdit ? 'Save' : 'Add' }}</button>
-      <button type="button" class="btn btn-secondary ml-2" (click)="showRoleForm = false">Cancel</button>
+      <button type="submit" class="btn btn-outline-success ml-2">{{ roleToEdit ? 'Save' : 'Add' }}</button><br><br>
+      <button type="button" class="btn btn-outline-secondary ml-2" (click)="showRoleForm = false">Cancel</button>
     </form>
   </div>
 
