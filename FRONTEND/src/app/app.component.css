@@ -1,8 +1,59 @@
-
+/* ----- Navbar ----- */
 .navbar {
-  background-color: #f8f9fa !important;
-  border-bottom: 1px solid #dee2e6;
-  font-size: larger;
-  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa !important; /* Gris clair */
+  border-bottom: 2px solid #dee2e6; /* Gris légèrement plus foncé */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère pour l'effet pro */
 }
 
+/* ----- Logo ----- */
+.navbar-brand {
+  font-size: 22px;
+  font-weight: bold;
+  color: #212529 !important; /* Noir */
+}
+
+/* ----- Liens du menu ----- */
+.navbar-nav .nav-link {
+  color: #212529 !important; /* Noir */
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #495057 !important; /* Gris foncé */
+}
+
+/* ----- Icônes ----- */
+.navbar-nav .nav-link i,
+.user-info i {
+  margin-right: 5px;
+}
+
+/* ----- Section utilisateur ----- */
+.user-info {
+  color: #212529;
+  font-size: 16px;
+  margin-right: 15px;
+}
+
+/* ----- Bouton Déconnexion ----- */
+.logout-btn {
+  color: #fff;
+  background-color: #82a5b6;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #1b5ea1;
+  color: white;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 992px) {
+  .user-info {
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}

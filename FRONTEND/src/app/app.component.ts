@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
   title = 'angular-app';
   public profile!: KeycloakProfile;
 
+
   hasUserViewPrivilege: boolean = false;
 
   constructor(
@@ -34,7 +35,6 @@ export class AppComponent implements OnInit {
     if (await this.keycloakService.isLoggedIn()) {
       this.profile = await this.keycloakService.loadUserProfile();
       console.log("Profil chargé", this.profile);
-
       await this.checkUserPrivileges(this.profile.id);
     }
   }

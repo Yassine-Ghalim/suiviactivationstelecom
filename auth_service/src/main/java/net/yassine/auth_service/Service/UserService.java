@@ -157,9 +157,10 @@ public class UserService  {
     /**
      * Récupère un utilisateur par son ID (Correction : `String id` au lieu de `Long id`)
      */
-    public Optional<User> getUserById(Long id) { // Correction : ID en String ✅
+    public Optional<User> getUserById(Long id) { // Correction : ID en String
         return userRepository.findById(id);
     }
+
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -273,14 +274,28 @@ public class UserService  {
                 .collect(Collectors.toSet());
     }
 
-    public User findByKeycloakUserId(String keycloakUserId) {
-        return userRepository.findByKeycloakUserId(keycloakUserId)
-                .orElseThrow(() -> new RuntimeException("User not found with keycloakUserId: " + keycloakUserId));
+    public Optional<User> findByKeycloakUserId(String keycloakUserId) {
+        System.out.println("Received keycloakUserId: " + keycloakUserId);  // Log pour déboguer l'ID
+        if (keycloakUserId == null || !isValidKeycloakUserIdFormat(keycloakUserId)) {
+            throw new IllegalArgumentException("Invalid keycloakUserId format");
+        }
+        // Continuez la recherche
+        return userRepository.findByKeycloakUserId(keycloakUserId);
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    private boolean isValidKeycloakUserIdFormat(String keycloakUserId) {
+        try {
+            UUID.fromString(keycloakUserId);  // Lance une exception si l'ID n'est pas un UUID valide
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
+
+
+
+
+
 
 
 }

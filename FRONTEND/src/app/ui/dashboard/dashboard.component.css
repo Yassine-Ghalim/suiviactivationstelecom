@@ -1,53 +1,48 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  display: flex;
-  height: 100vh;
-}
 
-.dashboard {
-  display: flex;
-  width: 100%;
-}
 
+
+ .dashboard {
+   display: flex;
+ }
 .sidebar {
-  width: 200px;
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
   padding: 20px;
-  border-right: 1px solid #ccc;
 }
-
 .sidebar h2 {
-  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
-
 .sidebar ul {
   list-style: none;
   padding: 0;
 }
-
 .sidebar ul li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  cursor: pointer;
+  margin: 10px 0;
+  font-size: 18px;
 }
-
 .content {
   flex: 1;
   padding: 20px;
+  background-color: #ecf0f1;
 }
-
-.header {
+.welcome-box {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.statistics-box {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.statistics-box h2 {
   margin-bottom: 20px;
 }
-
-.dashboard-cards {
-  display: flex;
-  gap: 10px;
-}
-
-.card {
-  flex: 1;
-  padding: 20px;
-  border: 1px solid #ccc;
-  text-align: center;
+.stat-item {
+  margin: 10px 0;
 }

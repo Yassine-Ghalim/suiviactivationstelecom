@@ -1,0 +1,94 @@
+.login-pf body {
+    background: var( --pf-global--primary-color--light-100); /* Fond gris clair */
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Police moderne */
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--pf-global--primary-color--light-200);
+    margin: 0;
+}
+
+#kc-header-wrapper {
+    color: var(--pf-global--primary-color--100); /* Bleu foncé */
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Ombre légère pour le texte */
+}
+
+:root {
+    /* Nouvelle palette de couleurs */
+    --pf-global--primary-color--100: #1E3A8A; /* Bleu foncé */
+    --pf-global--primary-color--200: #3B82F6; /* Bleu vif */
+    --pf-global--primary-color--300: #2563EB; /* Bleu plus foncé */
+    --pf-global--primary-color--400: #1E40AF; /* Bleu profond */
+    --pf-global--primary-color--light-100: #93C5FD; /* Bleu clair */
+    --pf-global--primary-color--light-200: #F3F4F6; /* Gris clair */
+
+    /* Couleurs des boutons */
+    --pf-c-button--m-primary--BackgroundColor: var(--pf-global--primary-color--100);
+    --pf-c-button--m-primary--hover--BackgroundColor: var(--pf-global--primary-color--200);
+    --pf-c-button--m-primary--active--BackgroundColor: var(--pf-global--primary-color--300);
+    --pf-c-button--m-primary--Color: #FFFFFF; /* Texte blanc pour les boutons */
+}
+
+/* Style des boutons */
+.pf-c-button {
+    border-radius: 4px; /* Coins légèrement arrondis */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transition fluide */
+}
+
+.pf-c-button--m-primary:hover {
+    transform: translateY(-1px); /* Effet de levée au survol */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+.pf-c-button--m-primary:active {
+    transform: translateY(0); /* Retour à la position initiale */
+}
+
+/* Style des champs de formulaire */
+.pf-c-form-control {
+    border: 1px solid var(--pf-global--primary-color--light-100); /* Bordure en bleu clair */
+    border-radius: 4px;
+    padding: 10px;
+    background-color: var(--pf-global--primary-color--light-200); /* Fond gris clair */
+    color: var(--pf-global--primary-color--400); /* Texte en bleu profond */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pf-c-form-control:focus {
+    border-color: var(--pf-global--primary-color--100); /* Bordure en bleu foncé au focus */
+    box-shadow: 0 0 5px rgba(30, 58, 138, 0.3); /* Ombre douce */
+    outline: none;
+}
+
+/* Style des liens */
+#kc-form-login a {
+    color: var(--pf-global--primary-color--100); /* Bleu foncé */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#kc-form-login a:hover {
+    color: var(--pf-global--primary-color--200); /* Bleu vif au survol */
+    text-decoration: underline;
+}
+
+/* Style des messages d'erreur */
+.alert-error {
+    color: #DC2626; /* Rouge pour les erreurs */
+    background-color: #FEE2E2; /* Fond rouge clair */
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+}

@@ -1,0 +1,15 @@
+<div class="container mt-4" *ngIf="profile">
+  <div class="card border-dark">
+    <div class="card-header bg-dark text-white text-center">
+      <h2 class="mb-0">Profil</h2>
+    </div>
+    <div class="card-body bg-light">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item bg-white text-dark"><strong>First Name :</strong> {{ profile.firstName }} </li>
+        <li class="list-group-item bg-white text-dark"><strong>Last Name :</strong>{{ profile.lastName }}</li>
+        <li class="list-group-item bg-white text-dark"><strong>Email :</strong> {{ profile.email }}</li>
+        <li class="list-group-item bg-white text-dark"><strong>Username :</strong> {{ profile.username }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

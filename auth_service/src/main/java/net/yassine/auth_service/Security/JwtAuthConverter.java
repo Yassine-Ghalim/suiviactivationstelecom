@@ -29,22 +29,29 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        // Extract default authorities from the JWT token
+        // Extraire les autorités par défaut du token JWT
         Collection<GrantedAuthority> authorities = new ArrayList<>(jwtGrantedAuthoritiesConverter.convert(jwt));
 
-        // Fetch privileges from the database and add them as authorities
-        String keycloakUserId = jwt.getSubject(); // Assuming the subject is the Keycloak user ID
-        User user = userService.findByKeycloakUserId(keycloakUserId);
-        if (user != null) {
-            List<Privilege> privileges = user.getRoles().stream()
-                    .flatMap(role -> role.getPrivileges().stream())
-                    .distinct()
-                    .collect(Collectors.toList());
+        // Récupérer l'ID utilisateur Keycloak (supposé être dans le sujet du JWT)
+        String keycloakUserId = jwt.getSubject();
+        Optional<User> userOptional = userService.findByKeycloakUserId(keycloakUserId);
 
-            // Map privileges to authorities
+        // Vérifier si l'utilisateur existe
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Extraire les privilèges des rôles de l'utilisateur (en s'assurant que les rôles et privilèges ne sont pas null)
+            Set<Privilege> privileges = user.getRoles().stream()
+                    .filter(Objects::nonNull)  // Assurer que le rôle n'est pas null
+                    .flatMap(role -> Optional.ofNullable(role.getPrivileges()).orElse(Collections.emptySet()).stream())  // Assurer que les privilèges ne sont pas null, et les convertir en flux
+                    .collect(Collectors.toSet());  // Utiliser un Set pour éviter les doublons
+
+            // Ajouter chaque privilège comme autorité
             privileges.forEach(privilege -> authorities.add(new SimpleGrantedAuthority(privilege.name())));
         }
 
+        // Créer et retourner un JwtAuthenticationToken avec les autorités et le nom d'utilisateur
         return new JwtAuthenticationToken(jwt, authorities, jwt.getClaim("preferred_username"));
     }
+
 }

@@ -1,0 +1,27 @@
+.card {
+  border: 2px solid #333; /* Bordure noire */
+  border-radius: 8px;
+}
+
+.card-header {
+  background-color: #000; /* Noir */
+  color: #fff; /* Texte blanc */
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.list-group-item {
+  font-size: 1.1rem;
+  padding: 12px;
+  background-color: #f8f8f8; /* Gris clair */
+  border-bottom: 1px solid #ddd; /* Lignes de séparation */
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item strong {
+  color: #333; /* Gris foncé pour les titres */
+}

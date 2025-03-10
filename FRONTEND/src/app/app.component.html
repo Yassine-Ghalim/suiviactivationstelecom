@@ -1,54 +1,60 @@
 <div *ngIf="keycloakService.isLoggedIn(); else loginTemplate">
-  <!-- Navbar/Menu visible uniquement si l'utilisateur est connecté -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <!-- Logo -->
+      <a class="navbar-brand app-title" routerLink="/dashboard">
+        <i class="bi bi-rocket-takeoff"></i> <strong>Application</strong>
+      </a>
 
-      <ul class="navbar-nav col-md-4"  >
-        <li class="nav-item" >
-          <a class="nav-link" routerLink="/dashboard"><h3>Application</h3></a>
-        </li>
-        <li class="nav-item" >
-          <a class="nav-link" routerLink="/dashboard"><b>🏠 Overview</b></a>
-        </li>
-        <!-- Afficher l'élément si l'utilisateur a le privilège 'USER_VIEW' -->
-        <li class="nav-item" *ngIf="hasUserViewPrivilege" >
-          <a class="nav-link" routerLink="/usermanagement">👥 Manage Users</a>
-        </li>
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <li class="nav-item" *ngIf="profile">
-          <a class="nav-link" >👤 Profil</a>
-        </li>
+      <!-- Menu -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard">
+              <i class="bi bi-house-door"></i> Home
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="hasUserViewPrivilege">
+            <a class="nav-link" routerLink="/usermanagement">
+              <i class="bi bi-people"></i> Manage Users
+            </a>
+          </li>
+          <li class="nav-item" *ngIf="profile">
+            <a class="nav-link" routerLink="/profile">
+              <i class="bi bi-person-circle"></i> Profile
+            </a>
+          </li>
+        </ul>
 
-        <li class="nav-item">
-          <button class="btn btn-outline-danger" (click)="handleLogout()">🚪 Logout</button>
-        </li>
-      </ul>
-      <ul class="navbar-nav col-md-6">
-
-      </ul>
-      <ul class="navbar-nav col-md-2">
-
-        <li *ngIf="profile" class="container mt-3">
-          <h3>Welcome, {{ profile.firstName }} {{ profile.lastName }}!</h3>
-        </li>
-      </ul>
+        <!-- User Section -->
+        <ul class="navbar-nav ms-auto">
+          <li *ngIf="profile" class="nav-item user-info">
+            <span><i class="bi bi-person-badge"></i> <strong>{{ profile.firstName }} {{ profile.lastName }}</strong></span>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-outline-light logout-btn" (click)="handleLogout()">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
-  <!-- Afficher le profil de l'utilisateur connecté -->
-
-
-  <!-- Contenu principal de l'application -->
+  <!-- Main Content -->
   <router-outlet></router-outlet>
 </div>
 
-<!-- Template affiché si l'utilisateur n'est PAS connecté -->
+<!-- Template displayed if the user is not logged in -->
 <ng-template #loginTemplate>
   <div class="login-container">
-    <h2>Welcome ! Veuillez vous connecter.</h2>
-    <button class="btn btn-primary" (click)="handleLogin()">🔑 Connexion</button>
+    <h2>Welcome! Please log in.</h2>
+    <button class="btn btn-primary login-btn" (click)="handleLogin()">🔑 Login</button>
   </div>
 </ng-template>

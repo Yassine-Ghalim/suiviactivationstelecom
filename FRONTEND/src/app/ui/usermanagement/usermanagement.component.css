@@ -1,3 +1,23 @@
-.container-fluid{
-  font-family: 'Rajdhani', sans-serif;
+body {
+  background-color: #f8f9fa;
+  color: #333;
+  font-family: Arial, sans-serif;
+}
+.container-fluid {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+.table thead {
+  background-color: #e9ecef;
+  color: #000;
+}
+.btn-outline-primary, .btn-outline-success, .btn-outline-danger, .btn-outline-secondary {
+  border-radius: 3px;
+}
+.border-end {
+  border-right: 1px solid #dee2e6 !important;
+}
+.border-bottom {
+  border-bottom: 2px solid #dee2e6 !important;
 }
