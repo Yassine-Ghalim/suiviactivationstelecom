@@ -4,6 +4,7 @@ import net.yassine.auth_service.Entity.User;
 import net.yassine.auth_service.Service.UserService;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         }
     }
 
+
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (authentication == null || permission == null) {
@@ -38,25 +40,29 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         }
 
         // Retrieve Keycloak User ID from JWT
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        String keycloakUserId = jwt.getSubject(); // 'sub' claim from JWT is the Keycloak User ID
+        Jwt jwt = (Jwt) authentication.getPrincipal();  // Retrieve the Jwt object
+        String keycloakUserId = jwt.getSubject();  // The 'sub' claim is usually the Keycloak User ID
 
+        // If keycloakUserId is not a valid UUID, handle the error gracefully
         if (keycloakUserId == null || !isValidKeycloakUserIdFormat(keycloakUserId)) {
             throw new IllegalArgumentException("Invalid Keycloak user ID format");
         }
 
+        // Retrieve the user using the Keycloak User ID
         Optional<User> userOptional = userService.findByKeycloakUserId(keycloakUserId);
 
+        // Check if the user exists
         if (!userOptional.isPresent()) {
-            return false;
+            return false;  // If the user is not found, return false
         }
 
+        // Retrieve the user
         User user = userOptional.get();
-        String permissionString = permission.toString(); // Convert permission to string
 
+        // Check if the user has the requested permission
         return user.getRoles().stream()
-                .flatMap(role -> role.getPrivileges().stream())
-                .anyMatch(priv -> priv.name().equals(permissionString)); // Check if any privilege matches
+                .flatMap(role -> role.getPrivileges().stream())  // Flatten role privileges
+                .anyMatch(priv -> priv.name().equals(permission.toString()));  // Check if any privilege matches the requested permission
     }
 
     @Override
