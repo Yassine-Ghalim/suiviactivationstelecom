@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()) // All other requests require authentication
                 .oauth2ResourceServer(o2 -> o2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))) // Configure JWT authentication
                 .build();
+
     }
 
     @Bean

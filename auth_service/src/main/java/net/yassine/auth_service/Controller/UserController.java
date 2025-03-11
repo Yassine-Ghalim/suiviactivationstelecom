@@ -26,7 +26,7 @@ public class UserController {
 
     // Endpoint pour créer un nouvel utilisateur (inscription)
     @PostMapping("/register")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
         try {
             String token = userService.registerUser(user);
@@ -49,7 +49,7 @@ public class UserController {
 
     //Endpoint pour récupérer tous les utilisateurs (Admin Panel)
     @GetMapping("/all")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<List<User>> getListUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -57,7 +57,7 @@ public class UserController {
 
     //Endpoint pour récupérer un utilisateur par ID
     @GetMapping("/{id}")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id)
@@ -73,7 +73,7 @@ public class UserController {
 
     //Endpoint pour mettre à jour un utilisateur
     @PutMapping("/{id}")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         try {
             // Appeler la méthode updateUser du service
@@ -101,7 +101,7 @@ public class UserController {
 
     //Endpoint pour supprimer un utilisateur
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
@@ -109,7 +109,7 @@ public class UserController {
 
 
     @PostMapping("/{userId}/roles/{roleId}")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<User> assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
         User user = userService.assignRoleToUser(userId, roleId);
         return ResponseEntity.ok(user);
@@ -118,7 +118,7 @@ public class UserController {
 
 
     @GetMapping("/privileges/{keycloakUserId}")
-    @PreAuthorize("hasPermission(#authentication, 'USER_VIEW')")
+    @PreAuthorize("hasPermission('USER', 'VIEW')")
     public ResponseEntity<List<Privilege>> getUserPrivileges(@PathVariable String keycloakUserId) {
         Optional<User> userOptional = userService.findByKeycloakUserId(keycloakUserId);  // Utilise le Keycloak ID
 
